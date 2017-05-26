@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+.pioenvs
+.piolibdeps
+
+*.sublime-project
+*.sublime-workspace
