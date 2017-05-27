@@ -14,17 +14,20 @@
 
 #define LED_INDICATE 13
 
+// 红外障碍物检测传感器，由于使用了中断，所以必须是2，3引脚
 #define IRPIN_RIGHT 2
 #define IRPIN_LEFT 3
 
+// 控制马达的引脚，其中9、10用于调整速度，因为这两个引脚的频率相同
 #define PIN_ENA 10
 #define PIN_IN1 11
 #define PIN_IN2 8
 
+#define PIN_ENB 9
 #define PIN_IN3 6
 #define PIN_IN4 7
-#define PIN_ENB 9
 
+///////////////////////////////////////////////////////////////////////////////
 Application::Application()
     : ultrasonicSensor(SR_TRIG, SR_ECHO) // ST_HW_HC_SR04(TRIG, ECHO)
     , isObstacleOnLeft(0)

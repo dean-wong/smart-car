@@ -51,7 +51,9 @@ void Ultrasonic::triggerPulse()
 
 void Ultrasonic::setTemperature(float temp)
 {
-    // 按往返计算加入温度的距离系数：K = 20000/(332+(0.607*temp));
+    // 按往返计算加入温度的距离系数：
+    // K = 20000/(332+(0.607*temp));
+    
     // 然后将这个系数代人距离计算公式：
     // distance = pulseIn(EchoPin, HIGH) / K；
     this->K = 10000 / (332 + 0.607 * temp);
