@@ -92,7 +92,7 @@ float Ultrasonic::multipleSampling(const int NumofSamples, const float Precision
     e /= (NumofSamples - 1);
     float s = sqrt(e);
 
-    delete Samples;
+    delete[] Samples;
 
     // 标准差小于0.3，就认为比较稳定了，可以将均值作为最终结果
     // 实际应用中，可以调整这个参数值，达到理想的结果
