@@ -141,18 +141,28 @@ void Application::Run()
             // 紧急停车
             if (0 < distance && distance < 30){
                 if (isMoving){ 
+                    LOG("Immediately stop!!!");
                     miniDriver.stop(); 
                 }
                 // 不再接受前进指令，只能左右转弯
-                if (action == MOVE)
+                if (action == MOVE){
+                    LOG("Dont do nothing.");
                     break;
+                }
             }
 
             switch(action){
-                case LEFT: miniDriver.turnLeft(10); break;
-                case RIGHT: miniDriver.turnRight(10); break;
+                case LEFT: 
+                    LOG("Turn left.");
+                    miniDriver.turnLeft(10); 
+                    break;
+                case RIGHT: 
+                    LOG("Turn right.");
+                    miniDriver.turnRight(10); 
+                    break;
                 case MOVE:
-                        isMoving?miniDriver.stop():miniDriver.forward();
+                    LOG("=== Action ===");
+                    isMoving?miniDriver.stop():miniDriver.forward();
                     break;
                 default: 
                     break;
