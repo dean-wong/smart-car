@@ -97,8 +97,8 @@ bool Application::Init()
 #ifdef DEBUG
     // 初始化串口通信
     Serial.begin(9600);
+    Log2Serial("Ultra Driver Init...");
 #endif
-    LOG("Ultra Driver Init...");
 
     pinMode(LED_INDICATE, OUTPUT); // 指示灯引脚
 
@@ -154,11 +154,11 @@ void Application::Run()
             switch(action){
                 case LEFT: 
                     LOG("Turn left.");
-                    miniDriver.turnLeft(10); 
+                    miniDriver.turnLeft(25); 
                     break;
                 case RIGHT: 
                     LOG("Turn right.");
-                    miniDriver.turnRight(10); 
+                    miniDriver.turnRight(25); 
                     break;
                 case MOVE:
                     LOG("=== Action ===");
