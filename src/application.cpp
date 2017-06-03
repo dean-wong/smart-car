@@ -6,7 +6,12 @@
 #include <Arduino.h>
 
 #undef DEBUG
-// #define DEBUG
+#define DEBUG 1
+#ifdef DEBUG
+    #define LOG(x)  Log2Serial(x)
+#else
+    #define LOG(x)  {}
+#endif
 
 // 设定SR04连接的Arduino引脚
 #define SR_TRIG 4
@@ -27,11 +32,40 @@
 #define PIN_IN3 6
 #define PIN_IN4 7
 
+// 红外接收器 VS1838B 引脚
+#define RECV_PIN 12
+
+// 遥控器代码表
+#define  UNKNOWN    -1
+#define  CH1        0xFFA25D
+#define  CH         0xFF629D
+#define  CH2        0xFFE21D
+#define  PREV       0xFF22DD
+#define  NEXT       0xFF02FD
+#define  PLAYPAUSE  0xFFC23D
+#define  VOL1       0xFFE01F
+#define  VOL2       0xFFA857
+#define  EQ         0xFF906F
+#define  BUTON0     0xFF6897
+#define  BUTON100   0xFF9867
+#define  BUTON200   0xFFB04F
+#define  BUTON1     0xFF30CF
+#define  BUTON2     0xFF18E7
+#define  BUTON3     0xFF7A85
+#define  BUTON4     0xFF10EF
+#define  BUTON5     0xFF38C7
+#define  BUTON6     0xFF5AA5
+#define  BUTON7     0xFF42BD
+#define  BUTON8     0xFF4AB5
+#define  BUTON9     0xFF52AD
+
+
 ///////////////////////////////////////////////////////////////////////////////
 Application::Application()
     : ultrasonicSensor(SR_TRIG, SR_ECHO) // ST_HW_HC_SR04(TRIG, ECHO)
     , isObstacleOnLeft(0)
     , isObstacleOnRight(0)
+    , irRecv(RECV_PIN)
 {
 }
 
@@ -45,7 +79,7 @@ Application& Application::GetApp()
     return s_app;
 }
 
-void Application::Log(const char* str) const
+void Application::Log2Serial(const char* str) const
 {
 #ifdef DEBUG
     Serial.print(str);
@@ -63,8 +97,8 @@ bool Application::Init()
 #ifdef DEBUG
     // 初始化串口通信
     Serial.begin(9600);
-    Serial.println("Ultra Driver Init...");
 #endif
+    LOG("Ultra Driver Init...");
 
     pinMode(LED_INDICATE, OUTPUT); // 指示灯引脚
 
@@ -82,6 +116,9 @@ bool Application::Init()
     // 产生随机种子
     randomSeed(analogRead(0));
 
+    LOG("Enabling IRin");
+    irRecv.enableIRIn();
+
     return true;
 }
 
@@ -95,25 +132,34 @@ void Application::Run()
     } else if (isObstacleOnRight) {
         miniDriver.turnLeft(random(0, 45));
     } else {
-        double distance = ultrasonicSensor.getDistance();
 
-        if (distance > 0) {
-            digitalWrite(LED_INDICATE, HIGH);
-#ifdef DEBUG
-            String msg = String(distance) + " cm\n";
-            Log(msg.c_str());
-#endif
-            if (distance > 30) {
-                miniDriver.forward();
-            } else {
-                miniDriver.stop(); // 随机摆动 0 - 45之间的角度，便于找到目标
-                randomWobble(0, 90);
+        const bool isMoving = miniDriver.isMoving();
+        const MOVEMENT action = (MOVEMENT)readIRCode();
+        const double distance = ultrasonicSensor.getDistance();
+
+        do{
+            // 紧急停车
+            if (0 < distance && distance < 30){
+                if (isMoving){ 
+                    miniDriver.stop(); 
+                }
+                // 不再接受前进指令，只能左右转弯
+                if (action == MOVE)
+                    break;
             }
-        } else {
-            digitalWrite(LED_INDICATE, LOW);
-            miniDriver.stop();
-            randomWobble(0, 60);
-        }
+
+            switch(action){
+                case LEFT: miniDriver.turnLeft(10); break;
+                case RIGHT: miniDriver.turnRight(10); break;
+                case MOVE:
+                        isMoving?miniDriver.stop():miniDriver.forward();
+                    break;
+                default: 
+                    break;
+            }
+
+        }while(false);
+
     }
 }
 
@@ -138,4 +184,41 @@ void Application::detectObstacle()
     if (isObstacleOnRight != Right) {
         isObstacleOnRight = Right;
     }
+}
+
+int Application::readIRCode()
+{
+    MOVEMENT r = UNDEFINE;
+    decode_results results;
+    if (irRecv.decode(&results)) { 
+        switch(results.value){
+            case UNKNOWN:   r = UNDEFINE; break;
+            case CH1:       r = LEFT;    break;
+            case CH:        r = RIGHT;   break;
+            case CH2:       r = MOVE;    break;
+            case PREV:      r = LEFT;    break;
+            case NEXT:      r = RIGHT;   break;
+            case PLAYPAUSE: r = MOVE;    break;
+            case VOL1:      r = LEFT;    break;
+            case VOL2:      r = RIGHT;   break;
+            case EQ:        r = MOVE;    break;
+            case BUTON0:    r = LEFT;    break;
+            case BUTON100:  r = RIGHT;   break;
+            case BUTON200:  r = MOVE;    break;
+            case BUTON1:    r = LEFT;    break;
+            case BUTON2:    r = RIGHT;   break;
+            case BUTON3:    r = MOVE;    break;
+            case BUTON4:    r = LEFT;    break;
+            case BUTON5:    r = RIGHT;   break;
+            case BUTON6:    r = MOVE;    break;
+            case BUTON7:    r = LEFT;    break;
+            case BUTON8:    r = RIGHT;   break;
+            case BUTON9:    r = MOVE;    break;
+            default:
+                            r = UNDEFINE;
+            break;
+        }
+        irRecv.resume();
+    } 
+    return r;
 }

@@ -6,6 +6,7 @@
 Driver::Driver()
     : wheel_left(0)
     , wheel_right(0)
+    , moving(false)
 {
 }
 
@@ -47,6 +48,8 @@ void Driver::forward(int speedVal)
 
     wheel_left->speed(speedVal);
     wheel_right->speed(speedVal);
+
+    moving = true;
 }
 
 void Driver::backward(int speedVal)
@@ -56,12 +59,16 @@ void Driver::backward(int speedVal)
 
     wheel_left->speed(speedVal);
     wheel_right->speed(speedVal);
+
+    moving = true;
 }
 
 void Driver::stop()
 {
     wheel_left->stop();
     wheel_right->stop();
+
+    moving = false;
 }
 
 void Driver::turnLeft(int degree)

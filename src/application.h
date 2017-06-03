@@ -7,6 +7,7 @@
 
 #include "driver.h"
 #include "ultrasonic.h"
+#include <IRremote.h>
 
 class Application {
 public:
@@ -14,8 +15,9 @@ public:
     virtual ~Application();
     bool Init();
     void Run();
-    void Log(const char* str) const;
+    void Log2Serial(const char* str) const;
 
+    enum MOVEMENT { UNDEFINE, LEFT, RIGHT, MOVE };
 protected:
     Application();
     Application(const Application&);
@@ -24,10 +26,13 @@ protected:
 private:
     void randomWobble(int start = 0, int end = 90);
     void detectObstacle();
+    int readIRCode();
     Ultrasonic ultrasonicSensor;
     Driver miniDriver;
     int isObstacleOnLeft;
     int isObstacleOnRight;
+    // 红外接收器
+    IRrecv irRecv;
 };
 
 #endif

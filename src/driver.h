@@ -7,6 +7,7 @@ class Driver {
 private:
     DcMotor* wheel_left;
     DcMotor* wheel_right;
+    bool     moving;
 
 public:
     Driver();
@@ -19,6 +20,7 @@ public:
     void stop();
     void turnLeft(int degree);
     void turnRight(int degree);
+    bool isMoving() const { return moving;}
 };
 
 #endif // DRIVER_H
