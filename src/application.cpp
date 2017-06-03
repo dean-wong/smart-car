@@ -6,7 +6,7 @@
 #include <Arduino.h>
 
 #undef _DEBUG
-#define _DEBUG
+// #define _DEBUG
 #ifdef _DEBUG
     #define LOG(x)  Log2Serial(x)
 #else
@@ -140,15 +140,10 @@ void Application::Run()
         do{
             // 紧急停车
             if (0 < distance && distance < 30){
-                if (isMoving){ 
-                    LOG("Immediately stop!!!");
-                    miniDriver.stop(); 
-                }
-                // 不再接受前进指令，只能左右转弯
-                if (action == MOVE){
-                    LOG("Dont do nothing.");
-                    break;
-                }
+                LOG("Immediately stop!!!");
+                // miniDriver.stop(); 
+                randomWobble(0, 90);
+                break;
             }
 
             switch(action){
@@ -224,8 +219,14 @@ int Application::readIRCode()
             case BUTON7:    r = LEFT;    break;
             case BUTON8:    r = RIGHT;   break;
             case BUTON9:    r = MOVE;    break;
+            // case 0x52A3D41F: 
+            // case 0x32C6FDF7:
+                            // r = LEFT;    break;
+            // case 0xD7E84B1B: 
+            // case 0x1BC0157B:
+                            // r = RIGHT;   break;
             default:
-                            r = UNDEFINE;
+                            r = MOVE;
             break;
         }
         irRecv.resume();
