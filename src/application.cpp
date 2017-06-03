@@ -5,9 +5,9 @@
 #include "application.h"
 #include <Arduino.h>
 
-#undef DEBUG
-#define DEBUG 1
-#ifdef DEBUG
+#undef _DEBUG
+#define _DEBUG
+#ifdef _DEBUG
     #define LOG(x)  Log2Serial(x)
 #else
     #define LOG(x)  {}
@@ -81,7 +81,7 @@ Application& Application::GetApp()
 
 void Application::Log2Serial(const char* str) const
 {
-#ifdef DEBUG
+#ifdef _DEBUG
     Serial.print(str);
 #endif
 }
@@ -94,7 +94,7 @@ void Application::onInterrupt()
 bool Application::Init()
 {
 
-#ifdef DEBUG
+#ifdef _DEBUG
     // 初始化串口通信
     Serial.begin(9600);
     Log2Serial("Ultra Driver Init...");
