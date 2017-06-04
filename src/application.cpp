@@ -219,12 +219,6 @@ int Application::readIRCode()
             case BUTON7:    r = LEFT;    break;
             case BUTON8:    r = RIGHT;   break;
             case BUTON9:    r = MOVE;    break;
-            // case 0x52A3D41F: 
-            // case 0x32C6FDF7:
-                            // r = LEFT;    break;
-            // case 0xD7E84B1B: 
-            // case 0x1BC0157B:
-                            // r = RIGHT;   break;
             default:
                             r = MOVE;
             break;
