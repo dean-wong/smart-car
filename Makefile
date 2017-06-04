@@ -3,19 +3,19 @@
 #PATH := /usr/local/bin:$(PATH)
 
 all:
-	platformio -f -c vim run
+	platformio -f run
 
 upload:
-	platformio -f -c vim run --target upload
+	platformio -f run --target upload
 
 clean:
-	platformio -f -c vim run --target clean
+	platformio -f run --target clean
 
 program:
-	platformio -f -c vim run --target program
+	platformio -f run --target program
 
 uploadfs:
-	platformio -f -c vim run --target uploadfs
+	platformio -f run --target uploadfs
 
 update:
-	platformio -f -c vim update
+	platformio -f update
