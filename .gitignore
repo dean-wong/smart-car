@@ -33,6 +33,7 @@
 
 .pioenvs
 .piolibdeps
+.vscode
 
 *.sublime-project
 *.sublime-workspace
